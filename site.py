@@ -1,4 +1,6 @@
 
+from urllib.parse import urlparse, parse_qs
+
 class Page:
 	"""
 	Holds information about a page.
@@ -26,5 +28,38 @@ class Site:
 	
 	def __init__(self, baseurl):
 		self.url = baseurl
-		self.pages = set()
-		self.pagesQueue = [baseurl]
+		self.pages = dict()
+		self.pagesQueue = []
+	
+	def crawl(url, auth=None):
+		pass
+	
+	def add_page_to_queue(url):
+		"""
+		Adds a URL to the page queue, and parses for GET parameters.
+		
+		The URL should be absolute.
+		
+		If the URL has already been parsed or is already in the queue, updates the
+		applicable GET parameters but otherwise does nothing.
+		
+		If the URL is not from this site or is not http, ignores it.
+		"""
+		o = urlparse(url)
+		
+		if o.scheme != "http":
+			return
+		
+		# TODO: Check for same site
+		
+		canonical_url = o.netloc + o.path
+		if canonical_url in self.pages:
+			p = self.pages[canonical_url]
+		else:
+			p = Page(canonical_url)
+			self.pages[canonical_url] = p
+			self.pagesQueue.append(p)
+			print("Added", canonical_url, "to queue")
+		
+		get_params = parse_qs(o.query)
+		p.get_parameters.update(get_params.keys())
