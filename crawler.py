@@ -1,6 +1,8 @@
 
 from urllib.parse import urlparse, urljoin, urlunparse, parse_qs
 import requests
+import logging
+logger = logging.getLogger("crawler")
 
 from parser import DiscovererParser, Form, FormField
 import guess
@@ -20,18 +22,28 @@ class Page:
 		self.forms = None
 	
 	def fetch_and_parse(self, site):
+		logger.debug("Fetching %s", self.url)
+		
 		r = site.s.get(self.url)
 		
 		if r.status_code != requests.codes.ok:
 			self.valid = False
 			self.response_code = r.status_code
+			
+			if self.guessed:
+				logger.debug("Failed to get guessed page: %s (status code: %d)", self.url, r.status_code)
+			else:
+				logger.warning("Failed to get page: %s (status code: %d)", self.url, r.status_code)
+			
 			return
 		
 		site.update_cookies_from_request(r)
 		
 		parser = DiscovererParser()
-		parser.feed(r.content)
+		parser.feed(r.text)
 		parser.close()
+		
+		logger.info("Feched %s. Found %d links and %d forms.", self.url, len(parser.links), len(parser.forms))
 		
 		self.forms = parser.forms
 		for rurl in parser.links:
@@ -85,9 +97,9 @@ class Site:
 	
 	def crawl_one(self):
 		page = self.pagesQueue.pop(0)
-		page.fetch_and_parse(self.s)
+		page.fetch_and_parse(self)
 	
-	def add_page_to_queue(url, guessed=False):
+	def add_page_to_queue(self, url, guessed=False):
 		"""
 		Adds a URL to the page queue, and parses for GET parameters.
 		
@@ -112,7 +124,7 @@ class Site:
 			p = Page(canonical_url, guessed)
 			self.pages[canonical_url] = p
 			self.pagesQueue.append(p)
-			print("Added", canonical_url, "to queue")
+			logger.debug("Added %s to queue", canonical_url)
 		
 		# Update possible GET paremeters
 		get_params = parse_qs(o.query)
