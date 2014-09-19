@@ -17,6 +17,7 @@ class DiscovererParser(HTMLParser):
 	def __init__(self):
 		self.forms = []
 		self.current_form = None
+		self.links = []
 	
 	def handle_starttag(self, tag, attrs):
 		if tag == "form":
