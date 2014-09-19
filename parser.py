@@ -22,9 +22,9 @@ class DiscovererParser(HTMLParser):
 	def handle_starttag(self, tag, attrs):
 		if tag == "form":
 			self.handle_form_start(attrs)
-		else if not current_form:
+		elif not current_form:
 			return
-		else if tag == "input":
+		elif tag == "input":
 			self.handle_form_input(tag, attrs)
 	
 	def handle_endtag(self, tag):
