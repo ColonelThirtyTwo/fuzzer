@@ -2,7 +2,6 @@ import requests
 import argparse
 
 
-
 fuzz = argparse.ArgumentParser(description='fuzz [discover | test] url OPTIONS', add_help=False)
 
 #print('COMMANDS:')
@@ -18,7 +17,6 @@ fuzz.add_argument('--custom-auth=string',help='Signal that the fuzzer should use
 #print('Discover options:')
 fuzz.add_argument('--common-words=file', help='Newline-delimited file of common words to be \
         used in page guessing and input guessing.')
-
 
 
 fuzz.print_help()
