@@ -81,7 +81,7 @@ class Site:
 		self.add_page_to_queue(url)
 		
 		while self.pagesQueue:
-			pass
+			self.crawl_one()
 	
 	def crawl_one(self):
 		page = self.pagesQueue.pop(0)
