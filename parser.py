@@ -22,10 +22,12 @@ class DiscovererParser(HTMLParser):
 	def handle_starttag(self, tag, attrs):
 		if tag == "form":
 			self.handle_form_start(attrs)
-		elif not current_form:
-			return
-		elif tag == "input":
+		else if current_form and tag == "input":
 			self.handle_form_input(tag, attrs)
+		else if tag == "a":
+			self.handle_link(self, attrs)
+		else if tag == "input":
+			return
 	
 	def handle_endtag(self, tag):
 		if tag == "form":
@@ -44,4 +46,8 @@ class DiscovererParser(HTMLParser):
 	
 	def handle_form_end(self, attrs):
 		self.current_form = None
+	
+	def handle_link(self, attrs):
+		l = Link(attrs.get("href",""))
+		self.links.append(l)
 	
