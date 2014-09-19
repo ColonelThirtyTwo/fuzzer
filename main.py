@@ -14,4 +14,6 @@ ops = argparse.ArgumentParser(description='OPTIONS:')
 ops.add_argument('--custom-auth=string',help='Signal that the fuzzer should use hard-coded\
         authentication for a specific application (e.g. DVWA).') #OPTIONAL
 
-args = cmds.parse_args()
+cmds.print_help()
+ops.print_help()
+
