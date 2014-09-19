@@ -1,6 +1,6 @@
 Fuzzer Project
 ==============
 
-Alex Parrill, Brian Switzer
+Alex Parrill, Ryan Switzer, Brian Hanson
 
 Project for SE 331 "Engineering Secure Software" at Rochester Institute of Technology
