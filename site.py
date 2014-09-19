@@ -1,5 +1,6 @@
 
 from urllib.parse import urlparse, parse_qs
+from parser import DiscovererParser, Form, FormField
 
 class Page:
 	"""
@@ -9,7 +10,7 @@ class Page:
 	def __init__(self, url):
 		self.url = url
 		self.get_parameters = set()
-		self.form_parameters = set()
+		self.forms = set()
 		self.cookies = set()
 	
 	def fetch_and_parse(self):
