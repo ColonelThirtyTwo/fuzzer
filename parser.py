@@ -2,9 +2,10 @@
 from html.parser import HTMLParser
 
 class FormField:
-	def __init__(self, name, typ):
+	def __init__(self, name, typ, attrs):
 		self.name = name
 		self.type = typ
+		self.attrs = attrs
 
 class Form:
 	def __init__(self, action, method):
@@ -13,8 +14,8 @@ class Form:
 		self.fields = []
 		
 class Select(FormField):
-	def __init__(self, name):
-		super().__init__(name, "select")
+	def __init__(self, name, attrs):
+		super().__init__(name, "select", attrs)
 		self.options = []
 
 class Option:
@@ -23,15 +24,13 @@ class Option:
 		self.selected = selected
 		self.value = value
 
-class Button:
-	def __init__(self, name, type, value):
-		self.name = name
-		self.type = type
-		self.value = value
+class Button(FormField):
+	def __init__(self, name, attrs):
+		super().__init__(name, "button", attrs)
 		
-class Textarea:
-	def __init__(self, name):
-		self.name = name
+class Textarea(FormField):
+	def __init__(self, name, attrs):
+		super().__init__(name, "textarea", attrs)
 
 class DiscovererParser(HTMLParser):
 	
@@ -39,6 +38,7 @@ class DiscovererParser(HTMLParser):
 		super().__init__()
 		self.forms = []
 		self.current_form = None
+		self.current_select = None
 		self.links = []
 		self.fields = []
 	
@@ -81,7 +81,7 @@ class DiscovererParser(HTMLParser):
 	def handle_select_start(self, attrs):
 		s = Select(attrs.get("name",""))
 		self.add_field_to_form(s)
-		self.current_form = s
+		self.current_select = s
 		
 	def handle_select_end(self,attrs):
 		self.current_select = None
@@ -92,7 +92,7 @@ class DiscovererParser(HTMLParser):
 			self.current_select.options.append(o)
 		
 	def handle_input(self, attrs):
-		field = FormField(attrs.get("name", ""), attrs.get("type", "text"))
+		field = FormField(attrs.get("name", ""), attrs.get("type", "text"), attrs)
 		self.add_field_to_form(field)
 	
 	def handle_link(self, attrs):
@@ -101,11 +101,11 @@ class DiscovererParser(HTMLParser):
 			self.links.append(l)
 	
 	def handle_button(self,attrs):
-		b = Button(attrs.get("name",""), attrs.get("type",""), attrs.get("value",""))
+		b = Button(attrs.get("name",""), attrs)
 		self.add_field_to_form(b)
 	
 	def handle_textarea(self,attrs):
-		ta = Textarea(attrs.get("name",""))
+		ta = Textarea(attrs.get("name",""), attrs)
 		self.add_field_to_form(ta)
 	
 	def add_field_to_form(self, field):
