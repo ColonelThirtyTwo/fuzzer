@@ -70,11 +70,14 @@ def cmd_discover(args):
 		if page.guessed:
 			print("\t Page URL was guessed.")
 		
-		print("\t", len(page.forms), "forms")
+		print("\t", len(page.forms), "form(s)")
 		for form in page.forms:
 			print("\t\t", form.action, form.method)
+			
+			for field in form.fields:
+				print("\t\t\t", field.name, "(", field.type, ")")
 		
-		print("\t", len(page.get_parameters), "GET parameters")
+		print("\t", len(page.get_parameters), "GET parameter(s)")
 		for param in page.get_parameters:
 			print("\t\t", param)
 
