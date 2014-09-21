@@ -12,6 +12,7 @@ EXTENSIONS = [
 	".htm",
 	".php",
 	".jsp",
+	".asp",
 	".aspx",
 ]
 

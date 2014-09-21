@@ -19,12 +19,13 @@ class Page:
 		self.guessed = guessed
 		
 		self.get_parameters = set()
-		self.forms = None
+		self.forms = []
 	
 	def fetch_and_parse(self, site):
 		logger.debug("Fetching %s", self.url)
 		
 		r = site.s.get(self.url)
+		self.fetched = True
 		
 		if r.status_code != requests.codes.ok:
 			self.valid = False
@@ -35,6 +36,10 @@ class Page:
 			else:
 				logger.warning("Failed to get page: %s (status code: %d)", self.url, r.status_code)
 			
+			return
+		
+		if r.headers.get("content-type", "") != "text/html":
+			logger.info("Skipping %s : Non HTML mime type of %s", self.url, r.headers.get("content-type", "(unknown)"))
 			return
 		
 		site.update_cookies_from_request(r)
@@ -50,11 +55,9 @@ class Page:
 			url = urljoin(self.url, rurl, allow_fragments=False)
 			site.add_page_to_queue(url)
 		
-		for rurl in guess.iter():
+		for rurl in site.words_list:
 			url = urljoin(self.url, rurl, allow_fragments=False)
 			site.add_page_to_queue(url, guessed=True)
-		
-		self.fetched = True
 	
 	def __hash__(self):
 		return hash(self.url)
@@ -67,10 +70,11 @@ class Site:
 	Holds information about a site, including entries for its pages.
 	"""
 	
-	def __init__(self):
+	def __init__(self, wordslist):
 		self.pages = dict()
-		self.pagesQueue = []
+		self.pages_queue = []
 		self.cookies = set()
+		self.words_list = wordslist
 	
 	def crawl(self, url, auth=None):
 		"""
@@ -92,11 +96,11 @@ class Site:
 		self.site = urlparse(url).netloc
 		self.add_page_to_queue(url)
 		
-		while self.pagesQueue:
+		while self.pages_queue:
 			self.crawl_one()
 	
 	def crawl_one(self):
-		page = self.pagesQueue.pop(0)
+		page = self.pages_queue.pop(0)
 		page.fetch_and_parse(self)
 	
 	def add_page_to_queue(self, url, guessed=False):
@@ -120,10 +124,13 @@ class Site:
 		canonical_url = urlunparse(("http", o.netloc, o.path, "", "", ""))
 		if canonical_url in self.pages:
 			p = self.pages[canonical_url]
+			if not guessed:
+				# Possibly crawled a page that was guessed earlier.
+				p.guessed = False
 		else:
 			p = Page(canonical_url, guessed)
 			self.pages[canonical_url] = p
-			self.pagesQueue.append(p)
+			self.pages_queue.append(p)
 			logger.debug("Added %s to queue", canonical_url)
 		
 		# Update possible GET paremeters
