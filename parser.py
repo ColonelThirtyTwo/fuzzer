@@ -27,13 +27,18 @@ class Select(FormField):
 		super().__init__(name, "select", attrs)
 		self.options = []
 	def to_string(self):
-		return "select attributes: " + str(self.attrs)
+		s = "select attributes: " + str(self.attrs) + " options: \n"
+		for o in self.options:
+			s += "\t\t" + o.to_string() + "\n"
+		return s
 
 class Option:
 	def __init__(self, label, selected, value):
 		self.label = label
 		self.selected = selected
 		self.value = value
+	def to_string(self):
+		return "option label: " + self.label + " value: " + self.value + " selected: " + self.selected
 
 class Button(FormField):
 	def __init__(self, name, attrs):
