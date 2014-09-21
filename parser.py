@@ -12,11 +12,11 @@ class Form:
 		self.method = method
 		self.fields = []
 		
-class Select:
+class Select(FormField):
 	def __init__(self, name):
-		self.name = name
+		super().__init__(name, "select")
 		self.options = []
-		
+
 class Option:
 	def __init__(self, label, selected, value):
 		self.label = label
@@ -38,28 +38,30 @@ class DiscovererParser(HTMLParser):
 		self.links = []
 		self.fields = []
 	
-	def handle_starttag(self, tag, attrs):
+	def handle_starttag(self, tag, attrs_list):
+		attrs = dict()
+		for key, value in attrs_list:
+			attrs[key] = value
+		
 		if tag == "form":
 			self.handle_form_start(attrs)
-		elif self.current_form and tag == "input":
-			self.handle_input(tag, attrs)
 		elif tag == "a":
-			self.handle_link(self, attrs)
+			self.handle_link(attrs)
 		elif tag == "input":
-			self.handle_input(self, attrs)
+			self.handle_input(attrs)
 		elif tag == "select":
-			self.handle_select_start(self, attrs)
+			self.handle_select_start(attrs)
 		elif tag == "option":
-			self.handle_option(self, attrs)
+			self.handle_option(attrs)
 		elif tag == "button":
-			self.handle_button(self, attrs)
+			self.handle_button(attrs)
 		elif tag == "textarea":
-			self.handle_textarea(self, attrs)
+			self.handle_textarea(attrs)
 		
 	def handle_endtag(self, tag):
 		if tag == "form":
 			self.handle_form_end()
-		elif tag == "select"
+		elif tag == "select":
 			self.handle_select_end()
 	
 	# #################################################################
@@ -74,7 +76,7 @@ class DiscovererParser(HTMLParser):
 	
 	def handle_select_start(self, attrs):
 		s = Select(attrs.get("name",""))
-		self.add_element_to_form(self,s)
+		self.add_field_to_form(s)
 		self.current_form = s
 		
 	def handle_select_end(self,attrs):
@@ -85,9 +87,9 @@ class DiscovererParser(HTMLParser):
 		if self.current_select:
 			self.current_select.options.append(o)
 		
-	def handle_input(self, tag, attrs):
+	def handle_input(self, attrs):
 		field = FormField(attrs.get("name", ""), attrs.get("type", "text"))
-		self.add_element_to_form(self, field)
+		self.add_field_to_form(field)
 	
 	def handle_link(self, attrs):
 		l = attrs.get("href","")
@@ -96,13 +98,13 @@ class DiscovererParser(HTMLParser):
 	
 	def handle_button(self,attrs):
 		b = Button(attrs.get("name",""), attrs.get("type",""), attrs.get("value",""))
-		self.add_element_to_form(self, b)
+		self.add_field_to_form(b)
 	
 	def handle_textarea(self,attrs):
 		#todo
 		return
 	
-	def add_element_to_form(self, element):
+	def add_field_to_form(self, field):
 		if not self.current_form:
 			self.fields.append(field)
 		else:
