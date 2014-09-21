@@ -1,10 +1,11 @@
 
 from urllib.parse import urlparse, urljoin, urlunparse, parse_qs
 import requests
+import re
 import logging
 logger = logging.getLogger("crawler")
 
-from parser import DiscovererParser, Form, FormField
+from fuzzparser import DiscovererParser, Form, FormField
 import guess
 
 class Page:
@@ -38,7 +39,7 @@ class Page:
 			
 			return
 		
-		if r.headers.get("content-type", "") != "text/html":
+		if not r.headers.get("content-type", "").startswith("text/html"):
 			logger.info("Skipping %s : Non HTML mime type of %s", self.url, r.headers.get("content-type", "(unknown)"))
 			return
 		
@@ -92,7 +93,8 @@ class Site:
 		if auth is not None:
 			r = self.s.post(url, data=auth, allow_redirects=False)
 			if "Location" in r.headers:
-				url = r.headers["Location"]
+				url = urljoin(url, r.headers["Location"])
+				logger.info("Authenticated and redirected to %s", url)
 		
 		self.site = urlparse(url).netloc
 		self.add_page_to_queue(url)

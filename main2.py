@@ -3,6 +3,7 @@ import sys
 import argparse
 import json
 import logging
+logging.basicConfig(format="%(levelname)10s:%(message)s", level=logging.WARNING, stream=sys.stderr)
 
 from crawler import Site
 
@@ -13,9 +14,13 @@ def parse_args():
 	discover_parser = subparsers.add_parser("discover",help="Discovers inputs to the website")
 	test_parser = subparsers.add_parser("test", help="Not implemented yet")
 	
-	discover_parser.add_argument("url", help="URL to start crawling at")
-	
 	parser.add_argument("--custom-auth", dest="customauth", help="Custom authentication string. This should be a JSON-encoded string of POST parameters to pass to the first URL.", default=None)
+	
+	log_levels = parser.add_mutually_exclusive_group()
+	log_levels.add_argument("-v", "--verbose", action="store_true", dest="verbose", help="Enable verbose output", default=False)
+	log_levels.add_argument("-q", "--quiet", action="store_true", dest="quiet", help="Do not output anything except errors and results", default=False)
+	
+	discover_parser.add_argument("url", help="URL to start crawling at")
 	discover_parser.add_argument("--common-words", dest="commonwords", required=True, help="File of common words to use in input and URL guessing", type=argparse.FileType())
 
 	args = parser.parse_args()
@@ -29,6 +34,13 @@ def cmd_test(args):
 	sys.exit(1)
 
 def cmd_discover(args):
+	if args.verbose:
+		logging.getLogger("crawler").setLevel(logging.DEBUG)
+	elif args.quiet:
+		logging.getLogger("crawler").setLevel(logging.ERROR)
+	else:
+		logging.getLogger("crawler").setLevel(logging.INFO)
+	
 	if args.customauth:
 		try:
 			auth = json.loads(args.customauth)
