@@ -7,8 +7,8 @@ class FormField:
 		self.type = typ
 		self.attrs = attrs
 	def to_string(self):
-		s = "type: " + self.type + " attributes: " + str(self.attrs)
-		return s
+		return "input type: " + self.type + " attributes: " + str(self.attrs)
+		
 	
 class Form:
 	def __init__(self, action, method):
@@ -26,6 +26,8 @@ class Select(FormField):
 	def __init__(self, name, attrs):
 		super().__init__(name, "select", attrs)
 		self.options = []
+	def to_string(self):
+		return "select attributes: " + str(self.attrs)
 
 class Option:
 	def __init__(self, label, selected, value):
@@ -36,10 +38,14 @@ class Option:
 class Button(FormField):
 	def __init__(self, name, attrs):
 		super().__init__(name, "button", attrs)
+	def to_string(self):
+		return "button attributes: " + str(self.attrs)
 		
 class Textarea(FormField):
 	def __init__(self, name, attrs):
 		super().__init__(name, "textarea", attrs)
+	def to_string(self):
+		return "textarea attributes: " + str(self.attrs)
 
 class DiscovererParser(HTMLParser):
 	
