@@ -10,4 +10,19 @@ Usage
 
 Run this command to get usage information:
 
-python3 main.py --help
+    python3 main.py --help
+
+To get help with the subcommands:
+
+    python3 main.py discover --help
+
+OR
+
+    python3 main.py test --help
+
+Example Auth Strings
+--------------------
+
+DVWA:
+
+    --custom-auth='{"username":"admin","password":"password","Login":"login"}'
