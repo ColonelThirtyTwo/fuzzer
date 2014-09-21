@@ -95,6 +95,8 @@ class Site:
 			if "Location" in r.headers:
 				url = urljoin(url, r.headers["Location"])
 				logger.info("Authenticated and redirected to %s", url)
+			else:
+				logger.warning("Login page didn't redirect anywhere. Check the authentication data.")
 		
 		self.site = urlparse(url).netloc
 		self.add_page_to_queue(url)

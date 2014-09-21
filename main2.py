@@ -17,7 +17,7 @@ def parse_args():
 	parser.add_argument("--custom-auth", dest="customauth", help="Custom authentication string. This should be a JSON-encoded string of POST parameters to pass to the first URL.", default=None)
 	
 	log_levels = parser.add_mutually_exclusive_group()
-	log_levels.add_argument("-v", "--verbose", action="store_true", dest="verbose", help="Enable verbose output", default=False)
+	log_levels.add_argument("-v", "--verbose", action="store_true", dest="verbose", help="Output verbose debugging info", default=False)
 	log_levels.add_argument("-q", "--quiet", action="store_true", dest="quiet", help="Do not output anything except errors and results", default=False)
 	
 	discover_parser.add_argument("url", help="URL to start crawling at")
