@@ -6,12 +6,21 @@ class FormField:
 		self.name = name
 		self.type = typ
 		self.attrs = attrs
-
+	def to_string(self):
+		s = "type: " + self.type + " attributes: " + str(self.attrs)
+		return s
+	
 class Form:
 	def __init__(self, action, method):
 		self.action = action
 		self.method = method
 		self.fields = []
+	def to_string(self):
+		s = "Form action:" + self.action + " method:" + self.method 
+		s += " fields:\n"
+		for f in self.fields:
+			s += "\t" + f.to_string() + "\n"
+		return s
 		
 class Select(FormField):
 	def __init__(self, name, attrs):
@@ -68,14 +77,14 @@ class DiscovererParser(HTMLParser):
 		elif tag == "select":
 			self.handle_select_end()
 	
-	# #################################################################
+	###################################################################
 	
 	def handle_form_start(self, attrs):
 		f = Form(attrs.get("action", "."), attrs.get("method", "GET"))
 		self.forms.append(f)
 		self.current_form = f
 		
-	def handle_form_end(self, attrs):
+	def handle_form_end(self):
 		self.current_form = None
 	
 	def handle_select_start(self, attrs):
@@ -113,4 +122,11 @@ class DiscovererParser(HTMLParser):
 			self.fields.append(field)
 		else:
 			self.current_form.fields.append(field)
-	
+
+# Test
+# parser = DiscovererParser()
+# parser.feed('<form><input some="a" some2="b">Test</input>'
+            # '<input>Test2</input></form>')
+# parser.close()
+# for f in parser.forms:
+	# print(f.to_string())
