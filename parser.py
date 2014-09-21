@@ -7,7 +7,7 @@ class FormField:
 		self.type = typ
 		self.attrs = attrs
 	def to_string(self):
-		return "input type: " + self.type + " attributes: " + str(self.attrs)
+		return "input type:" + self.type + " attributes: " + str(self.attrs)
 		
 	
 class Form:
@@ -16,8 +16,8 @@ class Form:
 		self.method = method
 		self.fields = []
 	def to_string(self):
-		s = "Form action:" + self.action + " method:" + self.method 
-		s += " fields:\n"
+		s = "Form action:" + self.action + " method:" + self.method + " fields:"
+		s += "None\n" if len(self.fields) == 0 else "\n"
 		for f in self.fields:
 			s += "\t" + f.to_string() + "\n"
 		return s
@@ -27,18 +27,17 @@ class Select(FormField):
 		super().__init__(name, "select", attrs)
 		self.options = []
 	def to_string(self):
-		s = "select attributes: " + str(self.attrs) + " options: \n"
+		s = "select attributes: " + str(self.attrs) + " options:"
+		s += "None\n" if len(self.options) == 0 else "\n"
 		for o in self.options:
 			s += "\t\t" + o.to_string() + "\n"
 		return s
 
 class Option:
-	def __init__(self, label, selected, value):
-		self.label = label
-		self.selected = selected
-		self.value = value
+	def __init__(self, attrs):
+		self.attrs = attrs
 	def to_string(self):
-		return "option label: " + self.label + " value: " + self.value + " selected: " + self.selected
+		return "option attributes: " + str(self.attrs)
 
 class Button(FormField):
 	def __init__(self, name, attrs):
@@ -99,15 +98,15 @@ class DiscovererParser(HTMLParser):
 		self.current_form = None
 	
 	def handle_select_start(self, attrs):
-		s = Select(attrs.get("name",""))
+		s = Select(attrs.get("name",""),attrs)
 		self.add_field_to_form(s)
 		self.current_select = s
 		
-	def handle_select_end(self,attrs):
+	def handle_select_end(self):
 		self.current_select = None
 
 	def handle_option(self,attrs):
-		o = Option(attrs.get("label",""),attrs.get("selected","false"),attrs.get("value",""))
+		o = Option(attrs)
 		if self.current_select:
 			self.current_select.options.append(o)
 		
@@ -134,10 +133,12 @@ class DiscovererParser(HTMLParser):
 		else:
 			self.current_form.fields.append(field)
 
-# Test
+
 # parser = DiscovererParser()
 # parser.feed('<form><input some="a" some2="b">Test</input>'
-            # '<input>Test2</input></form>')
+            # '<input>Test2</input></form><form>'
+			  # '<select><option label="testa"/><option label="testb"/>'
+			  # '</select><select></select></form><form></form>')
 # parser.close()
 # for f in parser.forms:
 	# print(f.to_string())
