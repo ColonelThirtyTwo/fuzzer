@@ -28,6 +28,10 @@ class Button:
 		self.name = name
 		self.type = type
 		self.value = value
+		
+class Textarea:
+	def __init__(self, name):
+		self.name = name
 
 class DiscovererParser(HTMLParser):
 	
@@ -99,8 +103,8 @@ class DiscovererParser(HTMLParser):
 		self.add_element_to_form(self, b)
 	
 	def handle_textarea(self,attrs):
-		#todo
-		return
+		ta = Textarea(attrs.get("name",""))
+		self.add_element_to_form(self,ta)
 	
 	def add_element_to_form(self, element):
 		if not self.current_form:
