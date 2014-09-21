@@ -62,7 +62,7 @@ def cmd_discover(args):
 	for page in crawler.pages.values():
 		if not page.valid:
 			if not page.guessed:
-				print("Couldn't fetch", url, "(status code:", page.response_code, ")")
+				print("Couldn't fetch", page.url, "(status code:", page.response_code, ")")
 			continue
 		
 		print(page.url)
