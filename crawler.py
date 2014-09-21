@@ -56,8 +56,9 @@ class Page:
 			site.add_page_to_queue(url)
 		
 		for rurl in site.words_list:
-			url = urljoin(self.url, rurl, allow_fragments=False)
-			site.add_page_to_queue(url, guessed=True)
+			for ext in guess.EXTENSIONS:
+				url = urljoin(self.url, rurl+ext, allow_fragments=False)
+				site.add_page_to_queue(url, guessed=True)
 	
 	def __hash__(self):
 		return hash(self.url)
@@ -89,7 +90,7 @@ class Site:
 		self.s = requests.Session()
 		
 		if auth is not None:
-			r = s.post(url, data=auth, allow_redirects=False)
+			r = self.s.post(url, data=auth, allow_redirects=False)
 			if "Location" in r.headers:
 				url = r.headers["Location"]
 		

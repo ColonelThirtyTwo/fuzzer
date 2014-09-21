@@ -1,0 +1,4 @@
+admin
+administrator
+admin/index
+administrator/index
