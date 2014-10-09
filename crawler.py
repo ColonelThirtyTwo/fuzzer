@@ -8,6 +8,12 @@ logger = logging.getLogger("crawler")
 from fuzzparser import DiscovererParser, Form, FormField
 import guess
 
+def remove_fragment(url):
+	# urljoin(allow_fragments=False) doesn't work
+	if isinstance(url, str):
+		url = urlparse(url)
+	return urlunparse((url.scheme, url.netloc, url.path, "", "", ""))
+
 class Page:
 	"""
 	Holds information about a page.
@@ -54,11 +60,13 @@ class Page:
 		self.forms = parser.forms
 		for rurl in parser.links:
 			url = urljoin(self.url, rurl, allow_fragments=False)
+			url = remove_fragment(url)
 			site.add_page_to_queue(url)
 		
 		for rurl in site.words_list:
 			for ext in guess.EXTENSIONS:
 				url = urljoin(self.url, rurl+ext, allow_fragments=False)
+				url = remove_fragment(url)
 				site.add_page_to_queue(url, guessed=True)
 	
 	def __hash__(self):
@@ -90,10 +98,14 @@ class Site:
 		"""
 		self.s = requests.Session()
 		
+		if not urlparse(url).scheme:
+			url = "http://"+url
+		
 		if auth is not None:
 			r = self.s.post(url, data=auth, allow_redirects=False)
 			if "Location" in r.headers:
 				url = urljoin(url, r.headers["Location"])
+				url = remove_fragment(url)
 				logger.info("Authenticated and redirected to %s", url)
 			else:
 				logger.warning("Login page didn't redirect anywhere. Check the authentication data.")
@@ -119,7 +131,7 @@ class Site:
 		
 		If the URL is not from this site or is not http, ignores it.
 		"""
-		o = urlparse(url)
+		o = urlparse(url, allow_fragments=False)
 		
 		# Check if not HTTP or in other site
 		if o.scheme != "http" or o.netloc != self.site:

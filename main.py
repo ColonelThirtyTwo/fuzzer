@@ -22,7 +22,12 @@ def parse_args():
 	
 	discover_parser.add_argument("url", help="URL to start crawling at")
 	discover_parser.add_argument("--common-words", dest="commonwords", required=True, help="File of common words to use in input and URL guessing", type=argparse.FileType())
-
+	
+	test_parser.add_argument("--vectors", help="Filename of test vectors. Required.", required=True, type=argparse.FileType())
+	test_parser.add_argument("--sensitive", help="Filename of newline-separated data that should be considered sensitive and should never appear in a page.", type=argparse.FileType())
+	# TODO: Random
+	# TODO: Slow
+	
 	args = parser.parse_args()
 	if "command" not in vars(args) or not args.command:
 		parser.print_help()
@@ -75,7 +80,7 @@ def cmd_discover(args):
 			print("\t\t", form.action, form.method)
 			
 			for field in form.fields:
-				print("\t\t\t", field.name, "(", field.type, ")")
+				print("\t\t\t", field.name, " : ", str(field))
 		
 		print("\t", len(page.get_parameters), "GET parameter(s)")
 		for param in page.get_parameters:
