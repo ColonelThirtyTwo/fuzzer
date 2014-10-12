@@ -48,6 +48,17 @@ class TextField(FormField):
 	def __str__(self):
 		return "Text Field"
 
+class ButtonField(FormField):
+	def __init__(self, name, value):
+		super().__init__(name)
+		self.value = value
+	
+	def get_placeholder(self):
+		return self.value
+	
+	def __str__(self):
+		return "Button"
+
 class Form:
 	def __init__(self, action, method):
 		self.action = action
@@ -142,7 +153,7 @@ class DiscovererParser(HTMLParser):
 				f.options.append(attrs.get("value", ""))
 				self.add_field_to_form(f)
 		elif typ == "submit":
-			pass
+			self.add_field_to_form(ButtonField(name, attrs.get("value", "")))
 		else:
 			f = TextField(name)
 			f.real_type = typ
@@ -163,13 +174,3 @@ class DiscovererParser(HTMLParser):
 	
 	def add_field_to_form(self, field):
 		self.current_form.fields.append(field)
-
-
-# parser = DiscovererParser()
-# parser.feed('<form><input some="a" some2="b">Test</input>'
-            # '<input>Test2</input></form><form>'
-			  # '<select><option label="testa"/><option label="testb"/>'
-			  # '</select><select></select></form><form></form>')
-# parser.close()
-# for f in parser.forms:
-	# print(f.to_string())

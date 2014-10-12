@@ -42,7 +42,7 @@ def parse_args():
 def cmd_discover(args, auth, cookies):
 	words = list()
 	for word in args.commonwords:
-		word = word.strip()
+		word = word.rstrip("\n")
 		if word:
 			words.append(word)
 	args.commonwords.close()
@@ -76,13 +76,13 @@ def cmd_discover(args, auth, cookies):
 def cmd_test(args, auth, cookies):
 	sensitive_data, vectors = [], []
 	for sensitive in args.sensitive:
-		sensitive = sensitive.strip()
+		sensitive = sensitive.rstrip("\n")
 		if sensitive:
 			sensitive_data.append(sensitive)
 	args.sensitive.close()
 	
 	for v in args.vectors:
-		v = v.strip()
+		v = v.rstrip("\n")
 		if v:
 			vectors.append(v)
 	args.vectors.close()
