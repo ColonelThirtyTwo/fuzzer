@@ -141,6 +141,8 @@ class DiscovererParser(HTMLParser):
 				f = CheckboxField(name)
 				f.options.append(attrs.get("value", ""))
 				self.add_field_to_form(f)
+		elif typ == "submit":
+			pass
 		else:
 			f = TextField(name)
 			f.real_type = typ

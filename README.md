@@ -20,14 +20,17 @@ OR
 
 	python3 main.py test --help
 
-Example Auth Strings
---------------------
+Note that the -v, -q, --blacklist, --custom-auth, and --cookies parameters must come before the subcommand (test|discover), and the subcommand specific arguments must come after the subcommand.
 
-DVWA:
-	
-	UNIX:
-	--custom-auth='{"username":"admin","password":"password","Login":"login"}'
-	
-	Windows:
-	--custom-auth="{\"username\":\"admin\",\"password\":\"password\",\"Login\":\"login\"}"
+Example Execution for DVWA
+--------------------------
 
+This assumes that DVWA is at localhost:8080/DVWA-1.0.8, but the URL is easily modified. Just don't forget to change the logout blacklisted page as well.
+
+UNIX:
+
+    python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies='{"security":"low"}' --custom-auth='{"username":"admin","password":"password","Login":"login"}' test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
+
+Windows:
+	
+	python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies="{\"security\":\"low"\}" --custom-auth="{\"username\":\"admin\",\"password\":\"password\",\"Login\":\"login\"}" test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000

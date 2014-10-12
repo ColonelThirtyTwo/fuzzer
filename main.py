@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 logging.basicConfig(format="%(levelname)10s:%(message)s", level=logging.WARNING, stream=sys.stderr)
+#logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 
 from crawler import Site
 from tester import Tester
@@ -16,6 +17,8 @@ def parse_args():
 	test_parser = subparsers.add_parser("test", help="Crawls a site and fuzzes each input")
 	
 	parser.add_argument("--custom-auth", dest="customauth", help="Custom authentication string. This should be a JSON-encoded string of POST parameters to pass to the first URL.", default=None)
+	parser.add_argument("--cookies", help="Custom cookies string. This should be a JSON-encoded string of cookies to set before fuzzing but after logging in. Requires --custom-auth", default=None)
+	parser.add_argument("-b", "--blacklist", help="Blacklists a certain URL. Should be an absolute path with a leading slash. This argument can be specified multiple times.", action="append")
 	
 	log_levels = parser.add_mutually_exclusive_group()
 	log_levels.add_argument("-v", "--verbose", action="store_true", dest="verbose", help="Output verbose debugging info", default=False)
@@ -36,7 +39,7 @@ def parse_args():
 		sys.exit(1)
 	return args
 
-def cmd_discover(args, auth):
+def cmd_discover(args, auth, cookies):
 	words = list()
 	for word in args.commonwords:
 		word = word.strip()
@@ -44,8 +47,8 @@ def cmd_discover(args, auth):
 			words.append(word)
 	args.commonwords.close()
 	
-	crawler = Site(words)
-	crawler.crawl(args.url, auth)
+	crawler = Site(words, args.blacklist)
+	crawler.crawl(args.url, auth, cookies)
 	
 	for page in crawler.pages.values():
 		# Warn if page wasn't retreived successfully, but only if it wasn't guessed.
@@ -70,7 +73,7 @@ def cmd_discover(args, auth):
 		for param in page.get_parameters:
 			print("\t\t", param)
 
-def cmd_test(args, auth):
+def cmd_test(args, auth, cookies):
 	sensitive_data, vectors = [], []
 	for sensitive in args.sensitive:
 		sensitive = sensitive.strip()
@@ -84,8 +87,8 @@ def cmd_test(args, auth):
 			vectors.append(v)
 	args.vectors.close()
 	
-	crawler = Site([])
-	crawler.crawl(args.url, auth)
+	crawler = Site([], args.blacklist)
+	crawler.crawl(args.url, auth, cookies)
 	
 	fuzzer = Tester(crawler, sensitive_data, vectors, args.slow, args.random)
 	fuzzer.run()
@@ -115,7 +118,17 @@ if __name__ == "__main__":
 	else:
 		auth = None
 	
+	if args.cookies:
+		try:
+			cookies = json.loads(args.cookies)
+		except ValueError as e:
+			print("Invalid cookies string:")
+			print(str(e))
+			sys.exit(1)
+	else:
+		cookies = None
+	
 	if args.command == "test":
-		cmd_test(args, auth)
+		cmd_test(args, auth, cookies)
 	elif args.command == "discover":
-		cmd_discover(args, auth)
+		cmd_discover(args, auth, cookies)

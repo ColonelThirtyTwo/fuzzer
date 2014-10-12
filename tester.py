@@ -4,6 +4,9 @@ import requests
 import logging
 logger = logging.getLogger("tester")
 
+from crawler import remove_fragment
+from urllib.parse import urljoin
+
 VULNERABILITY = 35 # Log level for vulnerabilities
 logging.addLevelName(VULNERABILITY, "VULNERABILITY")
 
@@ -80,14 +83,25 @@ class Tester:
 		Fuzzes one form on a page
 		"""
 		form_name = "Form %s (%s)" % (form.action, form.method)
+		form_url = remove_fragment(urljoin(page.url, form.action))
+		if form.method.lower() == "post":
+			form_method = "POST"
+		else:
+			form_method = "GET"
+		
 		for data, k, v in self.generate_form_data(form):
 			if not v:
 				logger.debug("Fuzzing: No attack vector")
 			else:
 				logger.debug("Fuzzing: Field '%s' set to vector '%s'", k, v)
 			
-			r = requests.Request("POST", page.url, data=data)
+			if form_method == "POST":
+				r = requests.Request(form_method, form_url, data=data)
+			else:
+				r = requests.Request(form_method, form_url, params=data)
+			
 			r = self.s.prepare_request(r)
+			
 			vuln = self.fuzz_one(r, v)
 			for msg in vuln:
 				self.log_vuln(page, form_name, v, *msg)
@@ -129,7 +143,7 @@ class Tester:
 		
 		start_time = time.monotonic()
 		try:
-			response = self.s.send(request, timeout=self.slow_time*2)
+			response = self.s.send(request, timeout=self.slow_time*2, allow_redirects=False)
 		except requests.exceptions.Timeout:
 			vulnerabilities.append(("Timed out.",))
 			return vulnerabilities

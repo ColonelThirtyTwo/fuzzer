@@ -2,6 +2,7 @@
 from urllib.parse import urlparse, urljoin, urlunparse, parse_qs
 import requests
 import re
+from collections import OrderedDict
 import logging
 logger = logging.getLogger("crawler")
 
@@ -10,7 +11,7 @@ import guess
 
 def remove_fragment(url):
 	"""
-	Strips fragments from the URL/
+	Strips fragments from the URL
 	"""
 	if isinstance(url, str):
 		url = urlparse(url)
@@ -82,13 +83,14 @@ class Site:
 	Holds information about a site, including entries for its pages.
 	"""
 	
-	def __init__(self, wordslist):
-		self.pages = dict()
+	def __init__(self, wordslist, blacklist=None):
+		self.pages = OrderedDict()
 		self.pages_queue = []
 		self.cookies = set()
 		self.words_list = wordslist
+		self.blacklist = blacklist or []
 	
-	def crawl(self, url, auth=None):
+	def crawl(self, url, auth=None, cookies=None):
 		"""
 		Begins crawling from a URL.
 		
@@ -104,7 +106,8 @@ class Site:
 			url = "http://"+url
 		
 		if auth is not None:
-			r = self.s.post(url, data=auth, allow_redirects=False)
+			
+			r = self.s.post(url, data=auth, allow_redirects=False, cookies=cookies)
 			if "Location" in r.headers:
 				url = urljoin(url, r.headers["Location"])
 				url = remove_fragment(url)
@@ -137,6 +140,10 @@ class Site:
 		
 		# Check if not HTTP or in other site
 		if o.scheme != "http" or o.netloc != self.site:
+			return
+		
+		# Check blacklist
+		if o.path in self.blacklist:
 			return
 		
 		# Get canonical URL (without get parameters/fragments) and get or create a page
