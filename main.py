@@ -31,7 +31,7 @@ def parse_args():
 	test_parser.add_argument("-v", "--vectors", metavar="vectors.txt", help="Filename of newline-separated test vectors.", required=True, type=argparse.FileType())
 	test_parser.add_argument("-s", "--sensitive", metavar="sensitive.txt", help="Filename of newline-separated data that should be considered sensitive and should never appear in a page.", type=argparse.FileType(), required=True)
 	test_parser.add_argument("-l", "--slow", metavar="ms", help="Number of milliseconds before the response is considered to be slow.", type=int, default=500)
-	test_parser.add_argument("-r", "--random", help="Fuzz pages and inputs in a random order rather than sequentially.", action="store_true")
+	test_parser.add_argument("-r", "--random", dest="random", help="Fuzz pages and inputs in a random order rather than sequentially.", action="store_true")
 	
 	args = parser.parse_args()
 	if "command" not in vars(args) or not args.command:
@@ -91,7 +91,10 @@ def cmd_test(args, auth, cookies):
 	crawler.crawl(args.url, auth, cookies)
 	
 	fuzzer = Tester(crawler, sensitive_data, vectors, args.slow, args.random)
-	fuzzer.run()
+	if args.random:
+		fuzzer.run_random()
+	else:
+		fuzzer.run()
 
 ########################################################################
 

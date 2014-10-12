@@ -1,6 +1,7 @@
 
 import time
 import requests
+from random import shuffle
 import logging
 logger = logging.getLogger("tester")
 
@@ -54,6 +55,40 @@ class Tester:
 				self.fuzz_get(page, param)
 			
 			for cookie in self.crawler.cookies:
+				logger.debug("Fuzzing cookie %s", cookie)
+				self.fuzz_cookie(page, cookie)
+	
+	def run_random(self):
+		"""
+		Runs all tests, but randomizes the order.
+		"""
+		events = []
+		
+		for page in self.crawler.pages.values():
+			if not page.valid:
+				pass
+			
+			for form in page.forms:
+				events.append((page, "form", form))
+			for param in page.get_parameters:
+				events.append((page, "get", param))
+			for cookie in self.crawler.cookies:
+				events.append((page, "cookie", cookie))
+		
+		shuffle(events)
+		
+		for page, action, data in events:
+			logger.info("Fuzzing URL %s", page.url)
+			
+			if action == "form":
+				logger.debug("Fuzzing form %s (%s)", form.action, form.method)
+				self.fuzz_form(page, data)
+			
+			if action == "get":
+				logger.debug("Fuzzing GET %s", param)
+				self.fuzz_get(page, data)
+			
+			if action == "cookie":
 				logger.debug("Fuzzing cookie %s", cookie)
 				self.fuzz_cookie(page, cookie)
 		
