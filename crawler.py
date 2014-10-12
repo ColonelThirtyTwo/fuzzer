@@ -9,7 +9,9 @@ from fuzzparser import DiscovererParser, Form, FormField
 import guess
 
 def remove_fragment(url):
-	# urljoin(allow_fragments=False) doesn't work
+	"""
+	Strips fragments from the URL/
+	"""
 	if isinstance(url, str):
 		url = urlparse(url)
 	return urlunparse((url.scheme, url.netloc, url.path, "", "", ""))
@@ -59,13 +61,13 @@ class Page:
 		
 		self.forms = parser.forms
 		for rurl in parser.links:
-			url = urljoin(self.url, rurl, allow_fragments=False)
+			url = urljoin(self.url, rurl)
 			url = remove_fragment(url)
 			site.add_page_to_queue(url)
 		
 		for rurl in site.words_list:
 			for ext in guess.EXTENSIONS:
-				url = urljoin(self.url, rurl+ext, allow_fragments=False)
+				url = urljoin(self.url, rurl+ext)
 				url = remove_fragment(url)
 				site.add_page_to_queue(url, guessed=True)
 	
@@ -131,7 +133,7 @@ class Site:
 		
 		If the URL is not from this site or is not http, ignores it.
 		"""
-		o = urlparse(url, allow_fragments=False)
+		o = urlparse(url)
 		
 		# Check if not HTTP or in other site
 		if o.scheme != "http" or o.netloc != self.site:

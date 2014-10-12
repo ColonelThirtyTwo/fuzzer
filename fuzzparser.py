@@ -6,9 +6,10 @@ class FormField:
 	def __init__(self, name):
 		self.name = name
 	
-	def get_values(self):
+	def get_placeholder(self):
 		"""
-		Returns a list of possible values to use.
+		Returns a value that can be used in the form when not testing this input for
+		XSS.
 		"""
 		raise NotImplementedError()
 
@@ -20,8 +21,8 @@ class SelectField(FormField):
 		super().__init__(name)
 		self.options = [] # list of values
 	
-	def get_values(self):
-		return self.options
+	def get_placeholder(self):
+		return self.options[0]
 	
 	def __str__(self):
 		return "Select Field: " + str(self.options)
@@ -31,10 +32,8 @@ class CheckboxField(FormField):
 		super().__init__(name)
 		self.options = [] # list of values
 	
-	def get_values(self):
-		#for o in intertools.permutations(self.options):
-		#	yield ",".join(o) # TODO: is this correct?
-		return [self.options[0]]
+	def get_placeholder(self):
+		return None
 	
 	def __str__(self):
 		return "Checkbox Field: " + str(self.options)
@@ -42,6 +41,9 @@ class CheckboxField(FormField):
 class TextField(FormField):
 	def __init__(self, name):
 		super().__init__(name)
+	
+	def get_placeholder(self):
+		return ""
 	
 	def __str__(self):
 		return "Text Field"
