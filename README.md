@@ -10,9 +10,11 @@ Requirements
 ------------
 
 Python: v3.2 or newer
+
 	[Uncertain? type 'python' into the terminal for version verification]
 
 Requests: v2.4.3 or newer
+
 	[Downloaded and Install from http://docs.python-requests.org/en/latest/]
 
 
