@@ -5,6 +5,17 @@ Alex Parrill, Ryan Switzer, Brian Hanson
 
 Project for SE 331 "Engineering Secure Software" at Rochester Institute of Technology
 
+
+Requirements
+------------
+
+Python: v3.2 or newer
+	[Uncertain? type 'python' into the terminal for version verification]
+
+Requests: v2.4.3 or newer
+	[Downloaded and Install from http://docs.python-requests.org/en/latest/]
+
+
 Usage
 -----
 
@@ -22,6 +33,7 @@ OR
 
 Note that the -v, -q, --blacklist, --custom-auth, and --cookies parameters must come before the subcommand (test|discover), and the subcommand specific arguments must come after the subcommand.
 
+
 Example Execution for DVWA
 --------------------------
 
@@ -29,8 +41,8 @@ This assumes that DVWA is at localhost:8080/DVWA-1.0.8, but the URL is easily mo
 
 UNIX:
 
-    python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies='{"security":"low"}' --custom-auth='{"username":"admin","password":"password","Login":"login"}' test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
+  python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies='{"security":"low"}' --custom-auth='{"username":"admin","password":"password","Login":"login"}' test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
 
 Windows:
-	
+
 	python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies="{\"security\":\"low"\}" --custom-auth="{\"username\":\"admin\",\"password\":\"password\",\"Login\":\"login\"}" test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
