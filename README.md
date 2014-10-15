@@ -11,12 +11,12 @@ Requirements
 
 Python: v3.2 or newer
 
-	[Uncertain? type 'python' into the terminal for version verification]
+	sudo apt-get install python3
 
 Requests: v2.4.3 or newer
 
-	[Downloaded and Install from http://docs.python-requests.org/en/latest/]
-
+	sudo apt-get install python3-pip
+	sudo pip install requests
 
 Usage
 -----
@@ -43,8 +43,8 @@ This assumes that DVWA is at localhost:8080/DVWA-1.0.8, but the URL is easily mo
 
 UNIX:
 
-		python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies='{"security":"low"}' --custom-auth='{"username":"admin","password":"password","Login":"login"}' test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
+    python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies='{"security":"low"}' --custom-auth='{"username":"admin","password":"password","Login":"login"}' test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
 
 Windows:
 
-	python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies="{\"security\":\"low"\}" --custom-auth="{\"username\":\"admin\",\"password\":\"password\",\"Login\":\"login\"}" test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
+    python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies="{\"security\":\"low"\}" --custom-auth="{\"username\":\"admin\",\"password\":\"password\",\"Login\":\"login\"}" test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
