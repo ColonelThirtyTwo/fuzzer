@@ -17,6 +17,12 @@ Requests: v2.4.3 or newer
 
 	sudo apt-get install python3-pip
 	sudo pip install requests
+  
+  another option to install requests is to clone the repo:
+    git clone git://github.com/kennethreitz/requests.git
+  and then navigate to the requests clone and run:
+    python setup.py install
+  
 
 Usage
 -----
@@ -47,4 +53,4 @@ UNIX:
 
 Windows:
 
-    python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies="{\"security\":\"low"\}" --custom-auth="{\"username\":\"admin\",\"password\":\"password\",\"Login\":\"login\"}" test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
+    python3 main.py -v --blacklist="/DVWA-1.0.8/logout.php" --cookies="{\"security\":\"low\"}" --custom-auth="{\"username\":\"admin\",\"password\":\"password\",\"Login\":\"login\"}" test http://localhost:8080/DVWA-1.0.8/login.php -v vectors.txt -s sensitive.txt --slow=1000
