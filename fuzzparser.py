@@ -83,6 +83,9 @@ class DiscovererParser(HTMLParser):
 		self.links = []
 	
 	def handle_starttag(self, tag, attrs_list):
+		"""
+		Handles parsing of html start tag
+		"""
 		attrs = dict()
 		for key, value in attrs_list:
 			attrs[key] = value
@@ -105,6 +108,9 @@ class DiscovererParser(HTMLParser):
 			self.handle_textarea(attrs)
 		
 	def handle_endtag(self, tag):
+		"""
+		Handles parsing of html end tag
+		"""
 		if tag == "form":
 			self.handle_form_end()
 		elif tag == "select":
@@ -113,26 +119,44 @@ class DiscovererParser(HTMLParser):
 	###################################################################
 	
 	def handle_form_start(self, attrs):
+		"""
+		Handles parsing of the start of a form
+		"""
 		f = Form(attrs.get("action", "."), attrs.get("method", "GET"))
 		self.forms.append(f)
 		self.current_form = f
 		
 	def handle_form_end(self):
+		"""
+		Handles parsing of end of a form
+		"""
 		self.current_form = None
 	
 	def handle_select_start(self, attrs):
+		"""
+		Handles parsing of the start of a select
+		"""
 		s = SelectField(attrs.get("name","(no name)"))
 		self.add_field_to_form(s)
 		self.current_field = s
 		
 	def handle_select_end(self):
+		"""
+		Handles parsing of end of a select
+		"""
 		self.current_field = None
 
 	def handle_option(self, attrs):
+		"""
+		Handles parsing of of options
+		"""
 		if self.current_field:
 			self.current_field.options.append(attrs.get("value", "")) # TODO: support default value properly
 		
 	def handle_input(self, attrs):
+		"""
+		Handles parsing of input
+		"""
 		typ = attrs.get("type", "text")
 		name = attrs.get("name", "(no name)")
 		
@@ -160,17 +184,29 @@ class DiscovererParser(HTMLParser):
 			self.add_field_to_form(f)
 	
 	def handle_link(self, attrs):
+		"""
+		Handles parsing of links
+		"""
 		l = attrs.get("href","")
 		if l:
 			self.links.append(l)
 	
 	def handle_button(self,attrs):
+		"""
+		Handles parsing of buttons
+		"""
 		#b = Button(attrs.get("name",""), attrs)
 		#self.add_field_to_form(b)
 		pass
 	
 	def handle_textarea(self,attrs):
+		"""
+		Handles parsing of textarea
+		"""
 		self.add_field_to_form(TextField(attrs.get("name","(no name)")))
 	
 	def add_field_to_form(self, field):
+		"""
+		Helper function that adds a field to the classes current form.
+		"""
 		self.current_form.fields.append(field)
