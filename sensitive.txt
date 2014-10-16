@@ -1,0 +1,9 @@
+Exception
+MySQL
+SQL
+XSS
+error
+ERROR
+syntax
+php
+version

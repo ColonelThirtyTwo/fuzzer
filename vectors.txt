@@ -1,0 +1,10 @@
+' OR 1=1 --
+' OR 1=1 #
+<SCRIPT>alert("test")</SCRIPT>
+>"><script>alert("XSS")</script>&
+'';!--"<XSS>=&{()}
+">
+%s%p%x%d
+; ls
+&& dir
+0xffffffff
